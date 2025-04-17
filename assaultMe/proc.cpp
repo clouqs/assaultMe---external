@@ -6,7 +6,7 @@ DWORD GetProcId(const wchar_t* procName) { // This function takes a process name
 	if (hSnapshot != INVALID_HANDLE_VALUE) {
 		PROCESSENTRY32 procEntry;
 		procEntry.dwSize = sizeof(procEntry);
-		if (Process32First(hSnapshot, &procEntry)) {
+		if (Process32First(hSnapshot, &procEntry)) { // documentazione: https://learn.microsoft.com/en-us/windows/win32/toolhelp/taking-a-snapshot-and-viewing-processes
 			do {
 				if (!_wcsicmp(procEntry.szExeFile, procName)) {
 					procId = procEntry.th32ProcessID;
@@ -14,13 +14,33 @@ DWORD GetProcId(const wchar_t* procName) { // This function takes a process name
 				}
 			} while (Process32Next(hSnapshot, &procEntry));
 		}
-		CloseHandle(hSnapshot);
+		
 	}
+	CloseHandle(hSnapshot);
+	return procId;
 
 
 }
 
 uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName) {
+	uintptr_t modBaseAddr = 0;
+	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procId);
+	if (hSnapshot != INVALID_HANDLE_VALUE) {
+		MODULEENTRY32 modEntry;
+		modEntry.dwSize = sizeof(modEntry);
+		if (Module32First(hSnapshot, &modEntry)) {
+			do {
+				if (!_wcsicmp(modEntry.szModule, modName)) {
+					modBaseAddr = (uintptr_t)modEntry.modBaseAddr;
+					break;
+				}
+			} while (Module32Next(hSnapshot, &modEntry));
+		}
+	}
+	CloseHandle(hSnapshot);
+	return modBaseAddr;
+
+
 
 }
 
