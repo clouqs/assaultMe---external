@@ -32,7 +32,7 @@ int main()
     std::cout << "AmmoAddr = 0x" << std::hex << ammoAddr << std::endl;
 
     if (ammoAddr == 0) {
-        std::cerr << "Failed to find ammo address!" << std::endl;
+        std::cerr << "Failed to find ammo address!" << std::endl; //commit testttttt
         CloseHandle(hProcess);
         return 1;
     }
