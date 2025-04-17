@@ -1,3 +1,13 @@
 moduleBase + 0x0017D848;   main address
 
 ammoOffset = { 0x30, 0x58, 0x1F4, 0x18,0x1DC, 0x14, 0x14 }
+
+
+
+player{
+
+head left/right = "ac_client.exe"+0017E0A8 + 0x34
+
+head up/down = "ac_client.exe"+0017E0A8 + 0x38
+
+}
