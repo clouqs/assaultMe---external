@@ -23,11 +23,11 @@ int main()
     }
 
     // Resolve base address of the pointer chain
-    uintptr_t dynamicPtrBaseAddr = moduleBase + 0x0017D848;
+    uintptr_t dynamicPtrBaseAddr = moduleBase + 0x0017d848; //0x0017E0A8;
     std::cout << "DynamicPtrBaseAddr = 0x" << std::hex << dynamicPtrBaseAddr << std::endl;
 
     // Resolve our ammo pointer chain
-    std::vector<unsigned int> ammoOffset = { 0x30, 0x58, 0x1F4, 0x18,0x1DC, 0x14, 0x14 }; // Corrected offsets
+    std::vector<unsigned int> ammoOffset = { 0x30, 0x58, 0x1F4, 0x18, 0x1DC, 0x14, 0x14 }; //0x140
     uintptr_t ammoAddr = FindDMAAddy(hProcess, dynamicPtrBaseAddr, ammoOffset);
     std::cout << "AmmoAddr = 0x" << std::hex << ammoAddr << std::endl;
 

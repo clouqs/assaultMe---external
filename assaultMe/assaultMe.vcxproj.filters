@@ -16,6 +16,9 @@
     <Filter Include="proc">
       <UniqueIdentifier>{11ad2d79-18e0-452f-86db-bb08d50c01cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="offset">
+      <UniqueIdentifier>{1f22a933-fa94-49d4-b4bc-facf965b7eff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assaultMe.cpp">
@@ -29,5 +32,8 @@
     <ClInclude Include="proc.h">
       <Filter>proc</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="offsets.txt" />
   </ItemGroup>
 </Project>
