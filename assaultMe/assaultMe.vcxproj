@@ -129,9 +129,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="assaultMe.cpp" />
+    <ClCompile Include="mem.cpp" />
     <ClCompile Include="proc.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mem.h" />
     <ClInclude Include="proc.h" />
   </ItemGroup>
   <ItemGroup>

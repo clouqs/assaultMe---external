@@ -2,66 +2,70 @@
 #include <vector>
 #include <windows.h>
 #include "proc.h"
+#include "mem.h"
 
-int main()
-{
-    // Get ProcID of the target process
+int main() {
+    HANDLE hProcess = 0;
+    uintptr_t moduleBase = 0, localPlayerPtr = 0, healthAddr = 0;
+    bool bHealth = false, bAmmo = false, bRecoil = false;
+
+    const int newValue = 1337; //change here
+
     DWORD procId = GetProcId(L"ac_client.exe");
-    if (procId == 0) {
-        std::cerr << "Failed to find process!" << std::endl;
-        return 1;
+
+    if (procId) {
+		hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, procId);
+		moduleBase = GetModuleBaseAddress(procId, L"ac_client.exe");
+		localPlayerPtr = moduleBase + 0x0017E0A8; //1.3.0.2 ver
+            healthAddr = FindDMAAddy(hProcess, localPlayerPtr, { 0xEC });
+
+    }
+    else {
+		std::cout << "Process not found!" << std::endl;
+		return 0;
     }
 
-    // Get module base address
-    uintptr_t moduleBase = GetModuleBaseAddress(procId, L"ac_client.exe");
 
-    // Get Handle to process
-    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, procId);
-    if (hProcess == NULL) {
-        std::cerr << "Failed to open process! Error: " << GetLastError() << std::endl;
-        return 1;
-    }
 
-    // Resolve base address of the pointer chain
-    uintptr_t dynamicPtrBaseAddr = moduleBase + 0x0017d848; //0x0017E0A8;
-    std::cout << "DynamicPtrBaseAddr = 0x" << std::hex << dynamicPtrBaseAddr << std::endl;
+    DWORD dwExit = 0;
 
-    // Resolve our ammo pointer chain
-    std::vector<unsigned int> ammoOffset = { 0x30, 0x58, 0x1F4, 0x18, 0x1DC, 0x14, 0x14 }; //0x140
-    uintptr_t ammoAddr = FindDMAAddy(hProcess, dynamicPtrBaseAddr, ammoOffset);
-    std::cout << "AmmoAddr = 0x" << std::hex << ammoAddr << std::endl;
+	while (GetExitCodeProcess(hProcess, &dwExit) && dwExit == STILL_ACTIVE) {
+        {
+			if (GetAsyncKeyState(VK_F1) & 1) {
+				bHealth = !bHealth;
+				if (bHealth) {
+					std::cout << "Health: ON" << std::endl;
+				}
+				else {
+					std::cout << "Health: OFF" << std::endl;
+				}
+			}
+			if (GetAsyncKeyState(VK_F2) & 1) {
+				bAmmo = !bAmmo;
+				if (bAmmo) {
+					mem::PatchEx((BYTE*)(moduleBase + 0x140), (BYTE*)&newValue, sizeof(newValue), hProcess);
+					std::cout << "Ammo: ON" << std::endl;
+				}
+				else {
+					mem::PatchEx((BYTE*)(moduleBase + 0x140), (BYTE*)&newValue, sizeof(newValue), hProcess);
+					std::cout << "Ammo: OFF" << std::endl;
+				}
+			}
+			if (GetAsyncKeyState(VK_F3) & 1) {
+				bRecoil = !bRecoil;
+				if (bRecoil) {
+					mem::NopEx((BYTE*)(moduleBase + ))
+					std::cout << "Recoil: ON" << std::endl;
+				}
+				else {
+					std::cout << "Recoil: OFF" << std::endl;
+				}
+			}
 
-    if (ammoAddr == 0) {
-        std::cerr << "Failed to find ammo address!" << std::endl; 
-        CloseHandle(hProcess);
-        return 1;
-    }
 
-    // Read ammo value
-    int ammoValue = 0;
-    if (!ReadProcessMemory(hProcess, (BYTE*)ammoAddr, &ammoValue, sizeof(ammoValue), nullptr)) {
-        std::cerr << "Read failed! Error: " << GetLastError() << std::endl;
-        CloseHandle(hProcess);
-        return 1;
-    }
-    std::cout << "Current Ammo Value = " << std::dec << ammoValue << std::endl;
 
-    // Update ammo value if <= 1337
-    if (ammoValue <= 1337) {
-        ammoValue = 1337; // Set to 1337 instead of incrementing
-        if (!WriteProcessMemory(hProcess, (BYTE*)ammoAddr, &ammoValue, sizeof(ammoValue), nullptr)) {
-            std::cerr << "Write failed! Error: " << GetLastError() << std::endl;
-        }
-    }
-
-    // Read again to confirm
-    ReadProcessMemory(hProcess, (BYTE*)ammoAddr, &ammoValue, sizeof(ammoValue), nullptr);
-    std::cout << "New Ammo Value = " << std::dec << ammoValue << std::endl;
-
-    CloseHandle(hProcess);
-    getchar();
-    return 0;
 }
+    
 
 
 

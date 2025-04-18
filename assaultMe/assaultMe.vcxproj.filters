@@ -19,6 +19,9 @@
     <Filter Include="offset">
       <UniqueIdentifier>{1f22a933-fa94-49d4-b4bc-facf965b7eff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mem">
+      <UniqueIdentifier>{8c0c9be9-29e4-422f-a128-fa3c5df18550}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assaultMe.cpp">
@@ -27,10 +30,16 @@
     <ClCompile Include="proc.cpp">
       <Filter>proc</Filter>
     </ClCompile>
+    <ClCompile Include="mem.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="proc.h">
       <Filter>proc</Filter>
+    </ClInclude>
+    <ClInclude Include="mem.h">
+      <Filter>mem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
