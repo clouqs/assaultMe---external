@@ -9,7 +9,6 @@ int main()
     uintptr_t moduleBase = 0, localPlayerPtr = 0, healthAddr = 0;
     bool bHealth = false, bAmmo = false, bRecoil = false;
 
-    const int newValue = 1337; // Health value to write
 
     // Get Process ID
     DWORD procId = GetProcId(L"ac_client.exe");
@@ -28,24 +27,30 @@ int main()
         // Resolve health address (localPlayerPtr + 0xEC)
         healthAddr = FindDMAAddy(hProcess, localPlayerPtr, { 0xEC });
 
-        std::cout << "Process found! PID: " << procId << std::endl;
+        std::cout << "Process found! PID: " << procId << std::endl; 
+
     }
     else
     {
-        std::cout << "Process not found. Press Enter to exit." << std::endl;
-        getchar();
+        std::cout << "Process not found. Press Enter to exit." << std::endl; 
         return 0;
     }
 
     DWORD dwExit = 0;
     while (GetExitCodeProcess(hProcess, &dwExit) && dwExit == STILL_ACTIVE)
     {
-        
-        if (GetAsyncKeyState(VK_F1) & 1) //needs update
+        if (GetAsyncKeyState(VK_F1) & 1) // Give 1000 health
         {
             bHealth = !bHealth;
-            std::cout << "Health Hack: " << (bHealth ? "ON" : "OFF") << std::endl;
+
+            if (bHealth)
+            {
+                const int newVal = 1000;
+                mem::PatchEx((BYTE*)healthAddr, (BYTE*)&newVal, sizeof(newVal), hProcess);
+                std::cout << "Set Health to 1000: ON" << std::endl;
+            }
         }
+        
 
         
         if (GetAsyncKeyState(VK_F2) & 1) //needs fix
@@ -55,13 +60,13 @@ int main()
             if (bAmmo)
             {
                 
-                mem::PatchEx((BYTE*)(moduleBase + 0x637E9), (BYTE*)"\xFF\x06", 2, hProcess);
+                mem::NopEx((BYTE*)(moduleBase + 0xC73EF),2, hProcess);
                 std::cout << "Unlimited Ammo: ON" << std::endl;
             }
             else
             {
                 
-                mem::PatchEx((BYTE*)(moduleBase + 0x637E9), (BYTE*)"\xFF\x0E", 2, hProcess);
+                mem::PatchEx((BYTE*)(moduleBase + 0xC73EF), (BYTE*)"\xFF\x08", 2, hProcess);
                 std::cout << "Unlimited Ammo: OFF" << std::endl;
             }
         }
@@ -92,13 +97,8 @@ int main()
             return 0;
         }
 
-        // Continuous Health Write
-        if (bHealth)
-        {
-            mem::PatchEx((BYTE*)healthAddr, (BYTE*)&newValue, sizeof(newValue), hProcess);
-        }
 
-        Sleep(10); 
+        Sleep(10);
     }
 
     std::cout << "Process closed. Press Enter to exit." << std::endl;
