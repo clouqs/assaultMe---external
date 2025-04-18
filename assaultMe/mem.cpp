@@ -6,10 +6,9 @@ void mem::PatchEx(BYTE* dst, BYTE* src, unsigned int size, HANDLE hProcess) {
 	VirtualProtectEx(hProcess, dst, size, oldProtect, &oldProtect);
 }
 
-void mem::NopEx(BYTE* dst, unsigned int size, HANDLE hProcess); {
+void mem::NopEx(BYTE* dst, unsigned int size, HANDLE hProcess) {
 	BYTE* nopArray = new BYTE[size];
 	memset(nopArray, 0x90, size);
-
 	PatchEx(dst, nopArray, size, hProcess);
 	delete[] nopArray;
 }
